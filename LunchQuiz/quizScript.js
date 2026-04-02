@@ -1,181 +1,108 @@
-* {
-  box-sizing: border-box;
-}
+const quizForm = document.getElementById("lunchQuiz");
+const hungerSlider = document.getElementById("hunger");
+const hungerValue = document.getElementById("hungerValue");
 
-img {
-  max-width: 100%;
-  height: auto;
-}
+const resultSection = document.getElementById("result");
+const resultTitle = document.getElementById("resultTitle");
+const resultImage = document.getElementById("resultImage");
+const resultText = document.getElementById("resultText");
+const restartBtn = document.getElementById("restartBtn");
 
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #fffaf5;
-  color: #2e2e2e;
-}
+hungerSlider.addEventListener("input", () => {
+  hungerValue.textContent = hungerSlider.value;
+});
 
-.quiz-container {
-  max-width: 850px;
-  margin: 0 auto;
-  padding: 40px 20px 60px;
-  overflow: hidden;
-}
+quizForm.addEventListener("submit", (event) => {
+  event.preventDefault();
 
-h1 {
-  text-align: center;
-  margin-bottom: 10px;
-  font-size: 2.2rem;
-}
+  const hunger = parseInt(hungerSlider.value);
+  const fit = document.querySelector('input[name="fit"]:checked')?.value;
+  const vibe = document.querySelector('input[name="vibe"]:checked')?.value;
 
-.intro {
-  text-align: center;
-  margin-bottom: 35px;
-  color: #666;
-}
+  const result = getLunchResult(hunger, fit, vibe);
 
-.question-block {
-  background: white;
-  border: 2px solid #f1dfcf;
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-}
+  resultTitle.textContent = result.name;
+  resultImage.src = result.image;
+  resultImage.alt = result.name;
+  resultText.textContent = result.description;
 
-.question-block h2 {
-  margin-top: 0;
-  font-size: 1.25rem;
-}
+  resultSection.classList.remove("hidden");
+  resultSection.scrollIntoView({ behavior: "smooth" });
+});
 
-input[type="range"] {
-  width: 100%;
-  margin-top: 14px;
-}
+restartBtn.addEventListener("click", () => {
+  quizForm.reset();
+  hungerSlider.value = 5;
+  hungerValue.textContent = 5;
+  resultSection.classList.add("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
 
-.slider-labels {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-  font-size: 0.95rem;
-}
-
-#hungerValue {
-  font-weight: bold;
-  min-width: 20px;
-  text-align: center;
-}
-
-.options {
-  display: grid;
-  gap: 14px;
-  margin-top: 16px;
-}
-
-.options label {
-  display: block;
-  background: #fff7ef;
-  border: 1px solid #ecd6c3;
-  border-radius: 12px;
-  padding: 14px;
-  cursor: pointer;
-}
-
-.options label:hover {
-  background: #fdeedc;
-}
-
-.image-options {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-top: 18px;
-}
-
-.image-card {
-  display: block;
-  width: 100%;
-  border: 3px solid transparent;
-  border-radius: 14px;
-  overflow: hidden;
-  cursor: pointer;
-  background: #fff;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.image-card:hover {
-  transform: scale(1.02);
-}
-
-.image-card input {
-  display: none;
-}
-
-.image-card img {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  display: block;
-}
-
-.image-card:has(input:checked) {
-  border-color: #ff914d;
-}
-
-button {
-  display: inline-block;
-  background: #ff914d;
-  color: white;
-  border: none;
-  padding: 14px 22px;
-  border-radius: 999px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #e67d39;
-}
-
-form button {
-  display: block;
-  margin: 20px auto 0;
-}
-
-.result {
-  text-align: center;
-  background: white;
-  border: 2px solid #f1dfcf;
-  border-radius: 16px;
-  padding: 28px;
-  margin-top: 28px;
-}
-
-.result img {
-  width: 100%;
-  max-width: 420px;
-  height: auto;
-  border-radius: 14px;
-  margin: 18px 0;
-}
-
-.hidden {
-  display: none;
-}
-
-@media (max-width: 700px) {
-  .image-options {
-    grid-template-columns: 1fr;
+function getLunchResult(hunger, fit, vibe) {
+  if (hunger === 10) {
+    return {
+      name: "A Horse",
+      image: "LunchOptions/horse.jpg",
+      description: "You did say you could eat a horse, and this quiz believes in taking people literally."
+    };
   }
 
-  .image-card img {
-    height: 200px;
+  let latteScore = 0;
+  let pokeScore = 0;
+  let candyScore = 0;
+
+  if (hunger <= 3) {
+    latteScore += 3;
+    candyScore += 2;
+  } else if (hunger <= 7) {
+    pokeScore += 3;
+    latteScore += 1;
+  } else {
+    pokeScore += 2;
+    candyScore += 2;
   }
 
-  .slider-labels {
-    flex-direction: column;
-    align-items: flex-start;
+  if (fit === "pajamas") {
+    latteScore += 3;
+  } else if (fit === "athleisure") {
+    pokeScore += 3;
+  } else if (fit === "dolledup") {
+    pokeScore += 2;
+    candyScore += 1;
+  } else if (fit === "embarrassed") {
+    candyScore += 3;
   }
+
+  if (vibe === "img1") {
+    latteScore += 2;
+  } else if (vibe === "img2") {
+    pokeScore += 2;
+  } else if (vibe === "img3") {
+    candyScore += 2;
+  } else if (vibe === "img4") {
+    pokeScore += 1;
+    candyScore += 1;
+  }
+
+  if (latteScore >= pokeScore && latteScore >= candyScore) {
+    return {
+      name: "A Latte",
+      image: "LunchOptions/latte.jpg",
+      description: "Your energy says lunch is optional, but caffeine is not."
+    };
+  }
+
+  if (pokeScore >= latteScore && pokeScore >= candyScore) {
+    return {
+      name: "Poke Bowl",
+      image: "LunchOptions/poke.jpg",
+      description: "You are giving balanced, capable, semi-responsible lunch energy."
+    };
+  }
+
+  return {
+    name: "Sour Candy",
+    image: "LunchOptions/candy.jpg",
+    description: "Today’s lunch choice is pure chaos, and honestly, we support it."
+  };
 }
-
